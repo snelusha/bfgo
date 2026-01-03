@@ -51,6 +51,8 @@ func NewOpWithOperand(c rune, operand uint) (Op, bool) {
 		return Op{kind: OpLeft, operand: operand}, true
 	case '>':
 		return Op{kind: OpRight, operand: operand}, true
+	case '.':
+		return Op{kind: OpOutput, operand: operand}, true
 	default:
 		return Op{}, false
 	}
