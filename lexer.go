@@ -14,18 +14,18 @@ func NewLexer(reader *bufio.Reader) *Lexer {
 	return &Lexer{reader: reader}
 }
 
-func (this Lexer) Next() (Op, error) {
-	c, err := this.read()
+func (l *Lexer) Next() (Op, error) {
+	c, err := l.read()
 	if err != nil {
 		return Op{}, err
 	}
 
 	if !isBrainfuckChar(c) {
-		return this.Next()
+		return l.Next()
 	}
 
 	if isRepeatable(c) {
-		operand, err := this.countRepeats(c)
+		operand, err := l.countRepeats(c)
 		if err != nil {
 			return Op{}, fmt.Errorf("counting repeats: %w", err)
 		}
@@ -46,11 +46,11 @@ func (this Lexer) Next() (Op, error) {
 	return op, nil
 }
 
-func (this Lexer) countRepeats(target rune) (uint, error) {
-	var count uint = 0
+func (l *Lexer) countRepeats(target rune) (uint, error) {
+	count := uint(1)
 
 	for {
-		next, err := this.peek()
+		next, err := l.peek()
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -62,7 +62,7 @@ func (this Lexer) countRepeats(target rune) (uint, error) {
 			break
 		}
 
-		if _, err = this.read(); err != nil {
+		if _, err = l.read(); err != nil {
 			return 0, err
 		}
 
@@ -72,27 +72,27 @@ func (this Lexer) countRepeats(target rune) (uint, error) {
 	return count, nil
 }
 
-func (this Lexer) peek() (rune, error) {
-	c, err := this.read()
+func (l *Lexer) peek() (rune, error) {
+	c, err := l.read()
 	if err != nil {
 		return 0, err
 	}
 
-	if err := this.unread(); err != nil {
+	if err := l.unread(); err != nil {
 		return 0, fmt.Errorf("unreading after peek: %w", err)
 	}
 
 	return c, nil
 }
 
-func (this Lexer) read() (rune, error) {
-	c, _, err := this.reader.ReadRune()
+func (l *Lexer) read() (rune, error) {
+	c, _, err := l.reader.ReadRune()
 	if err != nil {
 		return 0, err
 	}
 	return c, nil
 }
 
-func (this Lexer) unread() error {
-	return this.reader.UnreadRune()
+func (l *Lexer) unread() error {
+	return l.reader.UnreadRune()
 }
