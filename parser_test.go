@@ -73,6 +73,14 @@ func TestParserNestedBrackets(t *testing.T) {
 	if ops[1].operand != 3 {
 		t.Errorf("expected inner JumpFwd operand to be 3, got %d", ops[1].operand)
 	}
+
+	if ops[3].operand != 1 {
+		t.Errorf("expected inner JumpBack operand to be 1, got %d", ops[3].operand)
+	}
+
+	if ops[4].operand != 0 {
+		t.Errorf("expected outer JumpBack operand to be 0, got %d", ops[4].operand)
+	}
 }
 
 func TestParserUnmatchedOpenBracket(t *testing.T) {
