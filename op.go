@@ -1,5 +1,7 @@
 package bfgo
 
+import "fmt"
+
 type OpKind uint8
 
 const (
@@ -53,7 +55,34 @@ func NewOpWithOperand(c rune, operand uint) (Op, bool) {
 		return Op{kind: OpRight, operand: operand}, true
 	case '.':
 		return Op{kind: OpOutput, operand: operand}, true
+	case '[':
+		return Op{kind: OpJumpFwd, operand: 0}, true
+	case ']':
+		return Op{kind: OpJumpBack, operand: 0}, true
 	default:
 		return Op{}, false
+	}
+}
+
+func (op Op) String() string {
+	switch op.kind {
+	case OpInc:
+		return fmt.Sprintf("OpInc(%d)", op.operand)
+	case OpDec:
+		return fmt.Sprintf("OpDec(%d)", op.operand)
+	case OpLeft:
+		return fmt.Sprintf("OpLeft(%d)", op.operand)
+	case OpRight:
+		return fmt.Sprintf("OpRight(%d)", op.operand)
+	case OpOutput:
+		return "OpOutput"
+	case OpInput:
+		return "OpInput"
+	case OpJumpFwd:
+		return fmt.Sprintf("OpJumpFwd(%d)", op.operand)
+	case OpJumpBack:
+		return fmt.Sprintf("OpJumpBack(%d)", op.operand)
+	default:
+		return "UnknownOp"
 	}
 }
