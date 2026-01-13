@@ -81,6 +81,11 @@ func TestInterpreterErrors(t *testing.T) {
 			program:     strings.Repeat(">", 30000),
 			expectError: "pointer overflow",
 		},
+		{
+			name:        "input EOF",
+			program:     ",",
+			expectError: "input error",
+		},
 	}
 
 	for _, tt := range tests {
@@ -151,5 +156,56 @@ func TestInterpreterMemoryOperations(t *testing.T) {
 
 	if output.String() != expected {
 		t.Errorf("expected output %q, got %q", expected, output.String())
+	}
+}
+
+func TestInterpreterByteWrapping(t *testing.T) {
+	tests := []struct {
+		name     string
+		program  string
+		expected string
+	}{
+		{
+			name:     "increment 255 wraps to 0",
+			program:  strings.Repeat("+", 255) + "+.",
+			expected: string([]byte{0}),
+		},
+		{
+			name:     "decrement 0 wraps to 255",
+			program:  "-.",
+			expected: string([]byte{255}),
+		},
+		{
+			name:     "multiple wraps",
+			program:  strings.Repeat("+", 256) + strings.Repeat("+", 256) + ".",
+			expected: string([]byte{0}),
+		},
+		{
+			name:     "decrement wraps and increment back",
+			program:  "-.+.",
+			expected: string([]byte{255, 0}),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var output bytes.Buffer
+			input := strings.NewReader("")
+			reader := bufio.NewReader(strings.NewReader(tt.program))
+
+			interp, err := NewInterpreter(reader, &output, input)
+			if err != nil {
+				t.Fatalf("failed to create interpreter: %v", err)
+			}
+
+			err = interp.Execute()
+			if err != nil {
+				t.Fatalf("execution failed: %v", err)
+			}
+
+			if output.String() != tt.expected {
+				t.Errorf("expected output %q, got %q", tt.expected, output.String())
+			}
+		})
 	}
 }
