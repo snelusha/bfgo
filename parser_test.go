@@ -20,8 +20,8 @@ func TestParser(t *testing.T) {
 		t.Fatalf("parser error: %v", err)
 	}
 
-	if len(ops) != 68 {
-		t.Errorf("expected 68 operations, got %d", len(ops))
+	if len(ops) != 71 {
+		t.Errorf("expected 71 operations, got %d", len(ops))
 	}
 }
 
