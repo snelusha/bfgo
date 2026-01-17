@@ -2,6 +2,7 @@ package bfgo
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -59,7 +60,7 @@ func (i *Interpreter) Execute() error {
 		case OpInput:
 			buf := make([]byte, 1)
 			if _, err := i.input.Read(buf); err != nil {
-				if err == io.EOF {
+				if errors.Is(err, io.EOF) {
 					return NewInputError(ErrEOF)
 				}
 				return NewInputError(err)

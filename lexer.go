@@ -2,6 +2,7 @@ package bfgo
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -88,7 +89,7 @@ func (l *Lexer) peek() (rune, error) {
 func (l *Lexer) read() (rune, error) {
 	c, _, err := l.reader.ReadRune()
 	if err != nil {
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return 0, ErrEOF
 		}
 		return 0, err
