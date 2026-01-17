@@ -3,7 +3,6 @@ package bfgo
 import (
 	"bufio"
 	"fmt"
-	"io"
 )
 
 func Parse(reader *bufio.Reader) ([]Op, error) {
@@ -15,7 +14,7 @@ func Parse(reader *bufio.Reader) ([]Op, error) {
 	for {
 		op, err := lexer.Next()
 		if err != nil {
-			if err == io.EOF {
+			if err == ErrEOF {
 				break
 			}
 			return nil, err

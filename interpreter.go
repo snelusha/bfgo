@@ -43,23 +43,26 @@ func (i *Interpreter) Execute() error {
 		case OpLeft:
 			i.ptr -= int(op.operand)
 			if i.ptr < 0 {
-				return fmt.Errorf("pointer underflow at pc=%d", i.pc)
+				return NewPointerUnderflowError(i.pc)
 			}
 		case OpRight:
 			i.ptr += int(op.operand)
 			if i.ptr >= len(i.memory) {
-				return fmt.Errorf("pointer overflow at pc=%d", i.pc)
+				return NewPointerOverflowError(i.pc)
 			}
 		case OpOutput:
 			for range op.operand {
 				if _, err := i.output.Write([]byte{i.memory[i.ptr]}); err != nil {
-					return fmt.Errorf("output error: %w", err)
+					return NewOutputError(err)
 				}
 			}
 		case OpInput:
 			buf := make([]byte, 1)
 			if _, err := i.input.Read(buf); err != nil {
-				return fmt.Errorf("input error: %w", err)
+				if err == io.EOF {
+					return NewInputError(ErrEOF)
+				}
+				return NewInputError(err)
 			}
 			i.memory[i.ptr] = buf[0]
 		case OpJumpFwd:
