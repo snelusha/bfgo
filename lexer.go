@@ -2,6 +2,7 @@ package bfgo
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -52,7 +53,7 @@ func (l *Lexer) countRepeats(target rune) (uint, error) {
 	for {
 		next, err := l.peek()
 		if err != nil {
-			if err == io.EOF {
+			if err == ErrEOF {
 				break
 			}
 			return 0, err
@@ -88,6 +89,9 @@ func (l *Lexer) peek() (rune, error) {
 func (l *Lexer) read() (rune, error) {
 	c, _, err := l.reader.ReadRune()
 	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return 0, ErrEOF
+		}
 		return 0, err
 	}
 	return c, nil

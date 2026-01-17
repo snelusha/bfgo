@@ -2,7 +2,6 @@ package bfgo
 
 import (
 	"bufio"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +21,7 @@ func TestLexer(t *testing.T) {
 	for {
 		op, err := lexer.Next()
 		if err != nil {
-			if err == io.EOF {
+			if err == ErrEOF {
 				break
 			}
 			t.Fatalf("lexer error: %v", err)
